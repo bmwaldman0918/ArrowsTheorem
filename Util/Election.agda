@@ -1,8 +1,8 @@
-module Election where
+module Util.Election where
 
-open import Voter
+open import Util.Voter
 open WeakPreference using (Preference)
-open import Votes
+open import Util.Votes
 
 open import Data.Nat as ℕ
 open import Data.Fin as Fin

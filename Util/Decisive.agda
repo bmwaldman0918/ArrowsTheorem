@@ -1,10 +1,10 @@
 {-# OPTIONS --rewriting #-}
-module Decisive where
+module Util.Decisive where
 
-open import Voter
-open import Votes
-open import Election
-open import Coalition
+open import Util.Voter
+open import Util.Votes
+open import Util.Election
+open import Util.Coalition
 open WeakPreference
 open StrictPreference
 

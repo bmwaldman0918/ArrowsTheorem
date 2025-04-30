@@ -1,20 +1,20 @@
 {-# OPTIONS --rewriting #-}
 module Arrow where
 
-open import Voter
+open import Util.Voter
 open WeakPreference
 open StrictPreference
 open Preference
 
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
-open import Votes 
-open import Election
+open import Util.Votes 
+open import Util.Election
 open SWF
 open AlteredVoters
 
-open import Coalition
-open import Decisive
+open import Util.Coalition
+open import Util.Decisive
 open import Data.Nat as ℕ
 open import Data.Fin as Fin
 open import Data.Vec

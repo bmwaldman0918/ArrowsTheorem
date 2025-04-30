@@ -1,17 +1,17 @@
 {-# OPTIONS --rewriting #-}
-module Coalition where
+module Util.Coalition where
 
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
 open import Data.Vec as Vec
 open import Data.Bool using (Bool; not; true; false; _≟_; _xor_)
 open import Data.Nat as ℕ hiding (_≟_)
-open import Votes
+open import Util.Votes
 open import Data.Fin as Fin hiding (_≟_)
 open import Data.Product using (Σ; _×_; _,_; proj₂; proj₁)
 open import Relation.Binary.PropositionalEquality as Eq using (_≡_)
 open import Relation.Nullary using (¬_; Dec; _because_; ofⁿ; ofʸ)
-open import Voter
+open import Util.Voter
 open WeakPreference
 open StrictPreference
 

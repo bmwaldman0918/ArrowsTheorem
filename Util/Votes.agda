@@ -1,6 +1,6 @@
-module Votes where
+module Util.Votes where
   
-open import Voter
+open import Util.Voter
 open WeakPreference
 open StrictPreference
 open import Data.Nat as ℕ
