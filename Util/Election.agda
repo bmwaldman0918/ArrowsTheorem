@@ -55,12 +55,6 @@ record SWF {n : ℕ} (Result : {m : ℕ} → Votes n m → Fin n → Fin n → S
                 → (Result v a b) 
                 ⊎ (Result v b a)
 
-    Decidable   : {m : ℕ} 
-                → (v : Votes n m) 
-                → (a b : Fin n)   
-                →   (Result v a b) 
-                ⊎ ¬ (Result v a b)
-
     Asymmetric  : {m : ℕ} 
                 → (v : Votes n m) 
                 → (a b : Fin n)
