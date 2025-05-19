@@ -34,11 +34,11 @@ private
     result : {m : ℕ} → Votes n m → Fin n → Fin n → Set
 
 -- The coalition of the whole is decisive.
-LemmaOne : {m : ℕ} 
+WholeIsDecisive : {m : ℕ} 
          → (v : Votes n m) 
          → (SWF result)
          → Decisive (Whole m) v result
-LemmaOne {m = m} v swf a b ca = Pareto swf v a b (helper m v a b ca) where
+WholeIsDecisive {m = m} v swf a b ca = Pareto swf v a b (helper m v a b ca) where
   helper : (m : ℕ) 
          → (v : Votes n m) 
          → (a b : Fin n) 
@@ -90,7 +90,7 @@ FreshCandidate (suc (suc (suc n))) n>2 (suc a) (suc b)
 FreshCandidate (suc (suc (suc n))) n>2 (suc (suc a)) zero 
   = (suc zero) , ((λ {()}) , (λ {()}))
 
-LemmaTwoSimilar : {m : ℕ}
+WeaklyDecisive-x>yImpliesDecisive-x>zSimilar : {m : ℕ}
                 → (c : Coalition m) 
                 → (v : Votes n m) 
                 → (x y z : Fin n)
@@ -103,11 +103,11 @@ LemmaTwoSimilar : {m : ℕ}
                        ×  (CoalitionAgrees y x (InverseCoalition c) v')
                        ×  (ElectionAgrees v' y z)
                        ×  (Similar m x z (Zipped x z v v')))
-LemmaTwoSimilar [] [] x y z ¬x≡z ¬y≡z ¬x≡y ca-x>z = 
+WeaklyDecisive-x>yImpliesDecisive-x>zSimilar [] [] x y z ¬x≡z ¬y≡z ¬x≡y ca-x>z = 
   [] , (empty-coalition-agrees , empty-coalition-agrees , tt , tt)
-LemmaTwoSimilar (c ∷ c-rem) (p ∷ v) x y z ¬x≡z ¬y≡z ¬x≡y
+WeaklyDecisive-x>yImpliesDecisive-x>zSimilar (c ∷ c-rem) (p ∷ v) x y z ¬x≡z ¬y≡z ¬x≡y
   (true-agrees .c-rem .v ca-x>z .p xPz)
-  with LemmaTwoSimilar c-rem v x y z ¬x≡z ¬y≡z ¬x≡y ca-x>z
+  with WeaklyDecisive-x>yImpliesDecisive-x>zSimilar c-rem v x y z ¬x≡z ¬y≡z ¬x≡y ca-x>z
 ... | v' , c'-x>y , inv'-y>x , ea-y>z , sim-x-z
   with Alter-First p y -- x>y>z
 ... | R' , p' , p'-y-first , p'-sim-non-y 
@@ -148,9 +148,9 @@ LemmaTwoSimilar (c ∷ c-rem) (p ∷ v) x y z ¬x≡z ¬y≡z ¬x≡y
         ... | inj₁ zR''x = ⊥-elim ((p''-x-first z ¬z≡x) zR''x)
         ... | inj₂ xP''z = refl
 
-LemmaTwoSimilar (c ∷ c-rem) (p ∷ v) x y z ¬x≡z ¬y≡z ¬x≡y
+WeaklyDecisive-x>yImpliesDecisive-x>zSimilar (c ∷ c-rem) (p ∷ v) x y z ¬x≡z ¬y≡z ¬x≡y
   (false-agrees .c-rem .v ca-x>z .p)
-  with LemmaTwoSimilar c-rem v x y z ¬x≡z ¬y≡z ¬x≡y ca-x>z
+  with WeaklyDecisive-x>yImpliesDecisive-x>zSimilar c-rem v x y z ¬x≡z ¬y≡z ¬x≡y ca-x>z
 ... | v' , c'-x>y , inv'-y>x , ea-y>z , sim-x-z
   with Alter-First p y -- y>x>z
 ... | _ , p' , p'-y-first , p'-sim-non-y = (p' ∷ v') 
@@ -181,7 +181,7 @@ LemmaTwoSimilar (c ∷ c-rem) (p ∷ v) x y z ¬x≡z ¬y≡z ¬x≡y
         ... | inj₂ zPx | inj₁ xR'z = ⊥-elim (zPx (R'→R xR'z))
         ... | inj₂ zPx | inj₂ zP'z = refl
 
-LemmaTwo : {m : ℕ} 
+WeaklyDecisive-x>yImpliesDecisive-x>z : {m : ℕ} 
          → (c : NonEmptyCoalition m) 
          → (v : Votes n m) 
          → SWF result
@@ -195,8 +195,8 @@ LemmaTwo : {m : ℕ}
          → (CoalitionAgrees x z (Unwrap c) v)
          ------------------------------
          → result v x z
-LemmaTwo {result = result} c v swf x y z ¬x≡z ¬y≡z ¬x≡y dec-x>y ca-x>z
-  with LemmaTwoSimilar (Unwrap c) v x y z ¬x≡z ¬y≡z ¬x≡y ca-x>z 
+WeaklyDecisive-x>yImpliesDecisive-x>z {result = result} c v swf x y z ¬x≡z ¬y≡z ¬x≡y dec-x>y ca-x>z
+  with WeaklyDecisive-x>yImpliesDecisive-x>zSimilar (Unwrap c) v x y z ¬x≡z ¬y≡z ¬x≡y ca-x>z 
 ... | v' , ca-x>y , inv-y>x , ea-y>z , sim-x-z = 
   BinaryIIA swf v v' x z sim-x-z
     (Transitive swf v' x y z 
@@ -220,9 +220,9 @@ CorollaryOne {n} c v swf x y z ¬x≡y ¬y≡z dec-x>y ca-x>z
 ... | true  because ofʸ  x≡z = 
   ⊥-elim (Decisive-x>x v c x z x≡z ca-x>z)
 ... | false because ofⁿ ¬x≡z = 
-  LemmaTwo c v swf x y z ¬x≡z ¬y≡z ¬x≡y dec-x>y ca-x>z
+  WeaklyDecisive-x>yImpliesDecisive-x>z c v swf x y z ¬x≡z ¬y≡z ¬x≡y dec-x>y ca-x>z
 
-LemmaThreeSimilar : {m : ℕ}
+WeaklyDecisive-x>yImpliesDecisive-z>ySimilar : {m : ℕ}
                   → (c : Coalition m) 
                   → (v : Votes n m) 
                   → (x y z : Fin n)
@@ -235,11 +235,11 @@ LemmaThreeSimilar : {m : ℕ}
                          ×  (CoalitionAgrees y x (InverseCoalition c) v')
                          ×  (ElectionAgrees v' z x)
                          ×  (Similar m z y (Zipped z y v v')))
-LemmaThreeSimilar [] [] x y z ¬x≡z ¬y≡z ¬x≡y empty-coalition-agrees 
+WeaklyDecisive-x>yImpliesDecisive-z>ySimilar [] [] x y z ¬x≡z ¬y≡z ¬x≡y empty-coalition-agrees 
   = [] , empty-coalition-agrees , empty-coalition-agrees , tt , tt
-LemmaThreeSimilar (false ∷ c-rem) (p ∷ v) x y z ¬x≡z ¬y≡z ¬x≡y 
+WeaklyDecisive-x>yImpliesDecisive-z>ySimilar (false ∷ c-rem) (p ∷ v) x y z ¬x≡z ¬y≡z ¬x≡y 
   (false-agrees .c-rem .v ca-z>y .p) 
-  with LemmaThreeSimilar c-rem v x y z ¬x≡z ¬y≡z ¬x≡y ca-z>y 
+  with WeaklyDecisive-x>yImpliesDecisive-z>ySimilar c-rem v x y z ¬x≡z ¬y≡z ¬x≡y ca-z>y 
 ... | v' , ca-x>y , inv-y>x , ea-z>x , sim-z-y 
   with Alter-Last p x 
 ... | R' , p' , p'-x-last , p'-sim-non-x = p' ∷ v' 
@@ -269,9 +269,9 @@ LemmaThreeSimilar (false ∷ c-rem) (p ∷ v) x y z ¬x≡z ¬y≡z ¬x≡y
       ... | inj₁ zRy | inj₂ yP'z = ⊥-elim (yP'z (R→R' zRy))
       ... | inj₂ yPz | inj₁ zR'y = ⊥-elim (yPz (R'→R zR'y))
       ... | inj₂ yPz | inj₂ yP'z = refl
-LemmaThreeSimilar (true ∷ c-rem) (p ∷ v) x y z ¬x≡z ¬y≡z ¬x≡y 
+WeaklyDecisive-x>yImpliesDecisive-z>ySimilar (true ∷ c-rem) (p ∷ v) x y z ¬x≡z ¬y≡z ¬x≡y 
   (true-agrees .c-rem .v ca-z>y .p zPy) 
-  with LemmaThreeSimilar c-rem v x y z ¬x≡z ¬y≡z ¬x≡y ca-z>y 
+  with WeaklyDecisive-x>yImpliesDecisive-z>ySimilar c-rem v x y z ¬x≡z ¬y≡z ¬x≡y ca-z>y 
 ... | v' , ca-x>y , inv-y>x , ea-z>x , sim-z-y 
   with Alter-First p z 
 ... | R' , p' , p'-z-first , p'-sim-non-z 
@@ -303,7 +303,7 @@ LemmaThreeSimilar (true ∷ c-rem) (p ∷ v) x y z ¬x≡z ¬y≡z ¬x≡y
       ... | inj₂ yP''z = ⊥-elim (⊥-elim (yP''z (P→R p'' (p''-y-last z ¬z≡y))))
       ... | inj₁ zR''y = refl
 
-LemmaThree : {m : ℕ} 
+WeaklyDecisive-x>yImpliesDecisive-z>y : {m : ℕ} 
          → (c : NonEmptyCoalition m) 
          → (v : Votes n m) 
          → SWF result
@@ -317,8 +317,8 @@ LemmaThree : {m : ℕ}
          → CoalitionAgrees z y (Unwrap c) v
          ------------------------------
          → result v z y
-LemmaThree c v swf x y z ¬x≡z ¬y≡z ¬x≡y dec-x>y ca-z>y 
-  with LemmaThreeSimilar (Unwrap c) v x y z ¬x≡z ¬y≡z ¬x≡y ca-z>y 
+WeaklyDecisive-x>yImpliesDecisive-z>y c v swf x y z ¬x≡z ¬y≡z ¬x≡y dec-x>y ca-z>y 
+  with WeaklyDecisive-x>yImpliesDecisive-z>ySimilar (Unwrap c) v x y z ¬x≡z ¬y≡z ¬x≡y ca-z>y 
 ... | v' , ca-x>y , inv-y>x , ea-z>x , sim-z-y = 
   BinaryIIA swf v v' z y sim-z-y
     (Transitive swf v' z x y
@@ -341,7 +341,7 @@ CorollaryTwo : {m : ℕ}
 CorollaryTwo c v swf x y z ¬x≡z ¬x≡y dec-x>y ca-z>y with z Fin.≟ y
 ... | true because ofʸ z≡y = ⊥-elim (Decisive-x>x v c z y z≡y ca-z>y)
 ... | false because ofⁿ ¬z≡y = 
-  LemmaThree c v swf x y z ¬x≡z ¬y≡z ¬x≡y dec-x>y ca-z>y
+  WeaklyDecisive-x>yImpliesDecisive-z>y c v swf x y z ¬x≡z ¬y≡z ¬x≡y dec-x>y ca-z>y
   where
     ¬y≡z : ¬ y ≡ z 
     ¬y≡z y≡z = ¬z≡y (Eq.sym y≡z) 
@@ -376,7 +376,7 @@ CorollaryThree {n} (n>2) c v swf x y dec ca-y>x with x Fin.≟ y
 
 -- If a coalition is weakly deciisve for any pair of candidates, 
 -- it is strictly decisive for all candidates.
-LemmaFour : {m : ℕ}
+ExpansionOfDecisiveness : {m : ℕ}
           → (n ℕ.> 2)
           → (c : NonEmptyCoalition m)
           → SWF result
@@ -387,7 +387,7 @@ LemmaFour : {m : ℕ}
                   → result v' x y)
           → ∀ v a b → CoalitionAgrees a b (Unwrap c) v 
                     → result v a b
-LemmaFour {n} n>2 c swf x y ¬x≡y dec v a b ca-a>b
+ExpansionOfDecisiveness {n} n>2 c swf x y ¬x≡y dec v a b ca-a>b
   with a Fin.≟ x | b Fin.≟ y 
 ... | true because ofʸ a≡x | false because ofⁿ ¬b≡y rewrite a≡x 
   = CorollaryOne c v swf x y b ¬x≡y ¬y≡b dec ca-a>b
@@ -415,7 +415,7 @@ LemmaFour {n} n>2 c swf x y ¬x≡y dec v a b ca-a>b
         
     ¬y≡x : ¬ y ≡ x 
     ¬y≡x y≡x = ¬x≡y (Eq.sym y≡x)
-LemmaFour n>2 c swf x y ¬x≡y dec v a b ca-a>b | false because ofⁿ ¬a≡x | false because ofⁿ ¬b≡y 
+ExpansionOfDecisiveness n>2 c swf x y ¬x≡y dec v a b ca-a>b | false because ofⁿ ¬a≡x | false because ofⁿ ¬b≡y 
   with b Fin.≟ x | a Fin.≟ y 
 ... | false because ofⁿ ¬b≡x | false because ofⁿ ¬a≡y = 
   CorollaryOne c v swf a x b ¬a≡x ¬x≡b (λ v' ca-a>x _ → 
@@ -468,7 +468,7 @@ ConstructCoalition (false ∷ c) mc with ConstructCoalition c mc
 ConstructCoalition {m = suc m'} {s = s} (true ∷ c) mc
   = ((true ∷ FalseCoalition m') , HeadIsSingleton m') 
   , (false ∷ c) , mc' 
-  , LemmaFiveIsXor m' c
+  , ContractionOfDecisiveCoalitionIsXor m' c
     where
       mc' : MembersCount (false ∷ c) ≡ s
       mc' with MembersCount c
@@ -481,8 +481,8 @@ ConstructCoalition {m = suc m'} {s = s} (true ∷ c) mc
       HeadIsSingleton : ∀ m → MembersCount (true ∷ FalseCoalition m) ≡ 1
       HeadIsSingleton m rewrite FalseMembersCount m = refl
 
-      LemmaFiveIsXor : ∀ m' (c : Coalition m') → _≡_ {A = Vec Bool (suc m')} (true ∷ c) (true ∷ zipWith _xor_ (FalseCoalition m') c)
-      LemmaFiveIsXor m' c rewrite Eq.sym (isXor {m = m'} c) = refl
+      ContractionOfDecisiveCoalitionIsXor : ∀ m' (c : Coalition m') → _≡_ {A = Vec Bool (suc m')} (true ∷ c) (true ∷ zipWith _xor_ (FalseCoalition m') c)
+      ContractionOfDecisiveCoalitionIsXor m' c rewrite Eq.sym (isXor {m = m'} c) = refl
 ConstructVotes : {m : ℕ} 
                → (x y z : Fin n)
                → ¬ (x ≡ y)
@@ -596,7 +596,7 @@ ConstructVotes x y z ¬x≡y ¬x≡z ¬y≡z (true ∷ c) (true ∷ c') (false �
       x>y yR'x with p'-sim-non-z y x ¬y≡z ¬x≡z 
       ... | _ , R'→R = x-first y ¬y≡x (R'→R yR'x) 
 
-LemmaFiveSimilar : {m s : ℕ}
+ContractionOfDecisiveCoalitionSimilar : {m s : ℕ}
                → (c : Coalition m)
                → (MembersCount c ≡ (suc s))
                → (x y z : Fin n)
@@ -612,7 +612,7 @@ LemmaFiveSimilar : {m s : ℕ}
                       × (CoalitionAgrees z x (InverseCoalition c') v)
                       × (CoalitionAgrees z y c'' v)
                       × (CoalitionAgrees y z (InverseCoalition c'') v)
-LemmaFiveSimilar {n = n} c mc x y z ¬x≡y ¬x≡z ¬y≡z 
+ContractionOfDecisiveCoalitionSimilar {n = n} c mc x y z ¬x≡y ¬x≡z ¬y≡z 
   with ConstructCoalition c mc 
 ... | (head , single) , tail , is-smaller , isxor 
   with ConstructVotes x y z ¬x≡y ¬x≡z ¬y≡z c head tail isxor 
@@ -675,7 +675,7 @@ SimilarHelper (p ∷ v) (p' ∷ v') x y (true ∷ c)
 
 -- Every coalition of size greater than 2 
 -- has a strict subset that is decisive over a pair of candidates.
-LemmaFive : {m s : ℕ}
+ContractionOfDecisiveCoalition : {m s : ℕ}
           → (n ℕ.> 2)
           → (c : Coalition m) 
           → (MembersCount c ≡ (suc s))
@@ -695,12 +695,12 @@ LemmaFive : {m s : ℕ}
                         × (∀ v' → CoalitionAgrees z y c' v'
                                 → CoalitionAgrees y z (InverseCoalition c') v'
                                 → result v' z y))
-LemmaFive {n} {m = m} {s = zero} n>2 c mc x y z ¬x≡y ¬x≡z ¬y≡z dec-x>y swf 
+ContractionOfDecisiveCoalition {n} {m = m} {s = zero} n>2 c mc x y z ¬x≡y ¬x≡z ¬y≡z dec-x>y swf 
   = inj₁ ((c , mc) 
-  , (λ v' ca-x>z _ → LemmaFour n>2 (c , (Singleton→NonEmpty (c , mc))) 
+  , (λ v' ca-x>z _ → ExpansionOfDecisiveness n>2 (c , (Singleton→NonEmpty (c , mc))) 
     swf x y ¬x≡y (λ v'' ca-x>y _ → dec-x>y v'' ca-x>y) v' x z ca-x>z))
-LemmaFive {n} {m = m} {s = suc s} n>2 c mc x y z ¬x≡y ¬x≡z ¬y≡z dec-x>y swf
-  with LemmaFiveSimilar {s = suc s} c mc x y z ¬x≡y ¬x≡z ¬y≡z
+ContractionOfDecisiveCoalition {n} {m = m} {s = suc s} n>2 c mc x y z ¬x≡y ¬x≡z ¬y≡z dec-x>y swf
+  with ContractionOfDecisiveCoalitionSimilar {s = suc s} c mc x y z ¬x≡y ¬x≡z ¬y≡z
 ... | v' 
     , (c' , is-single) 
     , c'' , is-smaller 
@@ -716,7 +716,7 @@ LemmaFive {n} {m = m} {s = suc s} n>2 c mc x y z ¬x≡y ¬x≡z ¬y≡z dec-x>y
       (SimilarHelper v'' v' z y c'' c-z>y c''-z>y inv-y>z inv-c''-y>z) 
     zPy)
 
-LemmaSix : {m s : ℕ}
+ContractionOfDecisiveCoalitionWrapper : {m s : ℕ}
          → (n ℕ.> 2)
          → (c : Coalition m) 
          → (MembersCount c ≡ (suc s))
@@ -727,21 +727,21 @@ LemmaSix : {m s : ℕ}
          → SWF result
          → (v : Votes n m) 
          → Dictator v result
-LemmaSix {n} {m = zero} (s≤s (s≤s n>2)) [] mc x y _ _ swf v' = 
+ContractionOfDecisiveCoalitionWrapper {n} {m = zero} (s≤s (s≤s n>2)) [] mc x y _ _ swf v' = 
   ⊥-elim (SWF.Asymmetric swf [] zero (suc zero) 
     (SWF.Pareto swf [] zero (suc zero) tt) 
     (SWF.Pareto swf [] (suc zero) zero tt))
-LemmaSix {n} {result = result} {m = suc m} {zero} n>2 c mc x y ¬x≡y dec swf v 
-  = (c , mc) , LemmaFour n>2 (c , (Singleton→NonEmpty (c , mc))) 
+ContractionOfDecisiveCoalitionWrapper {n} {result = result} {m = suc m} {zero} n>2 c mc x y ¬x≡y dec swf v 
+  = (c , mc) , ExpansionOfDecisiveness n>2 (c , (Singleton→NonEmpty (c , mc))) 
     swf x y ¬x≡y (λ v'' ca-x>y _ → dec v'' ca-x>y) v
-LemmaSix {n} {result = result} {m = suc m} {suc s} n>2 c mc x y ¬x≡y dec swf v 
+ContractionOfDecisiveCoalitionWrapper {n} {result = result} {m = suc m} {suc s} n>2 c mc x y ¬x≡y dec swf v 
   with FreshCandidate n n>2 x y 
-... | z , ¬x≡z , ¬y≡z with LemmaFive n>2 c mc x y z ¬x≡y ¬x≡z ¬y≡z dec swf
+... | z , ¬x≡z , ¬y≡z with ContractionOfDecisiveCoalition n>2 c mc x y z ¬x≡y ¬x≡z ¬y≡z dec swf
 ... | inj₁ ((c' , mc') , is-dec) rewrite mc' = (c' , mc') 
-    , (LemmaFour n>2 (c' , Singleton→NonEmpty (c' , mc')) swf x z ¬x≡z is-dec v)
+    , (ExpansionOfDecisiveness n>2 (c' , Singleton→NonEmpty (c' , mc')) swf x z ¬x≡z is-dec v)
 ... | inj₂ (c' , is-smaller , is-dec) = 
-  LemmaSix {s = s} n>2 c' is-smaller z y ¬z≡y 
-    (λ v' → LemmaFour n>2 (c' , mc') swf z y ¬z≡y is-dec v' z y) 
+  ContractionOfDecisiveCoalitionWrapper {s = s} n>2 c' is-smaller z y ¬z≡y 
+    (λ v' → ExpansionOfDecisiveness n>2 (c' , mc') swf z y ¬z≡y is-dec v' z y) 
   swf v 
   where
     ¬z≡y : ¬ z ≡ y 
@@ -760,9 +760,9 @@ ArrowsTheorem {n} {m = zero} (s≤s (s≤s n>2)) [] swf
     (SWF.Pareto swf [] zero (suc zero) tt) 
     (SWF.Pareto swf [] (suc zero) zero tt))
 ArrowsTheorem {n} {result = result} {m = (suc m)} (s≤s (s≤s n>2)) v swf = 
-  LemmaSix {result = result} {s = m} (s≤s (s≤s n>2))
+  ContractionOfDecisiveCoalitionWrapper {result = result} {s = m} (s≤s (s≤s n>2))
     (Whole (suc m)) (sizeOfWholem≡m m) zero (suc zero) (λ ()) 
-      (λ v' → LemmaOne v' swf zero (suc zero)) swf v
+      (λ v' → WholeIsDecisive v' swf zero (suc zero)) swf v
   where
     sizeOfWholem≡m : (m : ℕ) → MembersCount (Whole (suc m)) ≡ suc m
     sizeOfWholem≡m zero = refl
