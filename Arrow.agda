@@ -202,7 +202,7 @@ WeaklyDecisive-x>yImpliesDecisive-x>z {result = result} c v swf x y z ¬x≡z ¬
     (Transitive swf v' x y z 
       (dec-x>y v' ca-x>y inv-y>x)
       (Pareto swf v' y z ea-y>z)) 
-CorollaryOne : {m : ℕ} 
+CorollaryOfWeaklyDecisive-x>yImpliesDecisive-x>z : {m : ℕ} 
              → (c : NonEmptyCoalition m) 
              → (v : Votes n m)
              → SWF result
@@ -215,7 +215,7 @@ CorollaryOne : {m : ℕ}
              → CoalitionAgrees x z (Unwrap c) v
              ------------------------------
              → result v x z
-CorollaryOne {n} c v swf x y z ¬x≡y ¬y≡z dec-x>y ca-x>z
+CorollaryOfWeaklyDecisive-x>yImpliesDecisive-x>z {n} c v swf x y z ¬x≡y ¬y≡z dec-x>y ca-x>z
   with x Fin.≟ z
 ... | true  because ofʸ  x≡z = 
   ⊥-elim (Decisive-x>x v c x z x≡z ca-x>z)
@@ -325,7 +325,7 @@ WeaklyDecisive-x>yImpliesDecisive-z>y c v swf x y z ¬x≡z ¬y≡z ¬x≡y dec-
       (Pareto swf v' z x ea-z>x)
       (dec-x>y v' ca-x>y inv-y>x)) 
 
-CorollaryTwo : {m : ℕ} 
+CorollaryOfWeaklyDecisive-x>yImpliesDecisive-z>y : {m : ℕ} 
              → (c : NonEmptyCoalition m) 
              → (v : Votes n m) 
              → SWF result
@@ -338,7 +338,7 @@ CorollaryTwo : {m : ℕ}
              → CoalitionAgrees z y (Unwrap c) v
              ------------------------------
              → result v z y
-CorollaryTwo c v swf x y z ¬x≡z ¬x≡y dec-x>y ca-z>y with z Fin.≟ y
+CorollaryOfWeaklyDecisive-x>yImpliesDecisive-z>y c v swf x y z ¬x≡z ¬x≡y dec-x>y ca-z>y with z Fin.≟ y
 ... | true because ofʸ z≡y = ⊥-elim (Decisive-x>x v c z y z≡y ca-z>y)
 ... | false because ofⁿ ¬z≡y = 
   WeaklyDecisive-x>yImpliesDecisive-z>y c v swf x y z ¬x≡z ¬y≡z ¬x≡y dec-x>y ca-z>y
@@ -346,7 +346,7 @@ CorollaryTwo c v swf x y z ¬x≡z ¬x≡y dec-x>y ca-z>y with z Fin.≟ y
     ¬y≡z : ¬ y ≡ z 
     ¬y≡z y≡z = ¬z≡y (Eq.sym y≡z) 
 
-CorollaryThree : {m : ℕ}
+WeaklyDecisive-x>yImpliesDecisive-y>x : {m : ℕ}
                → (n ℕ.> 2)
                → (c : NonEmptyCoalition m) 
                → (v : Votes n m) 
@@ -358,16 +358,16 @@ CorollaryThree : {m : ℕ}
                → CoalitionAgrees y x (Unwrap c) v
                ------------------------------
                → result v y x
-CorollaryThree {n} (n>2) c v swf x y dec ca-y>x with x Fin.≟ y 
+WeaklyDecisive-x>yImpliesDecisive-y>x {n} (n>2) c v swf x y dec ca-y>x with x Fin.≟ y 
 ... | true because  ofʸ  x≡y 
   = ⊥-elim (Decisive-x>x v c y x (Eq.sym x≡y) ca-y>x)
 ... | false because ofⁿ ¬x≡y with FreshCandidate n n>2 x y 
 ... | z , ¬x≡z , ¬y≡z = 
-  CorollaryOne c v swf y z x ¬y≡z ¬z≡x 
+  CorollaryOfWeaklyDecisive-x>yImpliesDecisive-x>z c v swf y z x ¬y≡z ¬z≡x 
     (λ v' ca-y>z inv-z>y → 
-      CorollaryTwo c v' swf x z y ¬x≡y ¬x≡z 
+      CorollaryOfWeaklyDecisive-x>yImpliesDecisive-z>y c v' swf x z y ¬x≡y ¬x≡z 
         (λ v'' ca-x>z _ → 
-          CorollaryOne c v'' swf x y z ¬x≡y ¬y≡z dec ca-x>z) 
+          CorollaryOfWeaklyDecisive-x>yImpliesDecisive-x>z c v'' swf x y z ¬x≡y ¬y≡z dec ca-x>z) 
       ca-y>z) 
   ca-y>x 
     where
@@ -390,22 +390,22 @@ ExpansionOfDecisiveness : {m : ℕ}
 ExpansionOfDecisiveness {n} n>2 c swf x y ¬x≡y dec v a b ca-a>b
   with a Fin.≟ x | b Fin.≟ y 
 ... | true because ofʸ a≡x | false because ofⁿ ¬b≡y rewrite a≡x 
-  = CorollaryOne c v swf x y b ¬x≡y ¬y≡b dec ca-a>b
+  = CorollaryOfWeaklyDecisive-x>yImpliesDecisive-x>z c v swf x y b ¬x≡y ¬y≡b dec ca-a>b
     where 
       ¬y≡b : ¬ y ≡ b 
       ¬y≡b y≡b = ¬b≡y (Eq.sym y≡b)
 ... | false because ofⁿ ¬a≡x | true because ofʸ b≡y rewrite b≡y 
-  = CorollaryTwo c v swf x y a ¬x≡a ¬x≡y dec ca-a>b
+  = CorollaryOfWeaklyDecisive-x>yImpliesDecisive-z>y c v swf x y a ¬x≡a ¬x≡y dec ca-a>b
     where 
       ¬x≡a : ¬ x ≡ a
       ¬x≡a x≡a = ¬a≡x (Eq.sym x≡a)
 ... | true because ofʸ a≡x | true because ofʸ b≡y rewrite a≡x | b≡y 
   with FreshCandidate n n>2 x y 
 ... | z , ¬x≡z , ¬y≡z
-  = CorollaryOne c v swf x z y ¬x≡z ¬z≡y (λ v' ca-x>z _ → 
-      CorollaryTwo c v' swf y z x ¬y≡x ¬y≡z (λ v'' ca-y>z _ → 
-        CorollaryOne c v'' swf y x z ¬y≡x ¬x≡z 
-          (λ v'' ca-y>x _ → CorollaryThree n>2 c v'' swf x y dec ca-y>x)
+  = CorollaryOfWeaklyDecisive-x>yImpliesDecisive-x>z c v swf x z y ¬x≡z ¬z≡y (λ v' ca-x>z _ → 
+      CorollaryOfWeaklyDecisive-x>yImpliesDecisive-z>y c v' swf y z x ¬y≡x ¬y≡z (λ v'' ca-y>z _ → 
+        CorollaryOfWeaklyDecisive-x>yImpliesDecisive-x>z c v'' swf y x z ¬y≡x ¬x≡z 
+          (λ v'' ca-y>x _ → WeaklyDecisive-x>yImpliesDecisive-y>x n>2 c v'' swf x y dec ca-y>x)
         ca-y>z) 
       ca-x>z) 
     ca-a>b
@@ -418,9 +418,9 @@ ExpansionOfDecisiveness {n} n>2 c swf x y ¬x≡y dec v a b ca-a>b
 ExpansionOfDecisiveness n>2 c swf x y ¬x≡y dec v a b ca-a>b | false because ofⁿ ¬a≡x | false because ofⁿ ¬b≡y 
   with b Fin.≟ x | a Fin.≟ y 
 ... | false because ofⁿ ¬b≡x | false because ofⁿ ¬a≡y = 
-  CorollaryOne c v swf a x b ¬a≡x ¬x≡b (λ v' ca-a>x _ → 
-    CorollaryTwo c v' swf y x a ¬y≡a ¬y≡x (λ v'' ca-y>x _ → 
-      CorollaryThree n>2 c v'' swf x y dec ca-y>x)
+  CorollaryOfWeaklyDecisive-x>yImpliesDecisive-x>z c v swf a x b ¬a≡x ¬x≡b (λ v' ca-a>x _ → 
+    CorollaryOfWeaklyDecisive-x>yImpliesDecisive-z>y c v' swf y x a ¬y≡a ¬y≡x (λ v'' ca-y>x _ → 
+      WeaklyDecisive-x>yImpliesDecisive-y>x n>2 c v'' swf x y dec ca-y>x)
     ca-a>x) 
   ca-a>b
   where
@@ -433,8 +433,8 @@ ExpansionOfDecisiveness n>2 c swf x y ¬x≡y dec v a b ca-a>b | false because o
     ¬y≡a : ¬ y ≡ a 
     ¬y≡a y≡a = ¬a≡y (Eq.sym y≡a)    
 ... | false because ofⁿ ¬b≡x | true because ofʸ a≡y rewrite a≡y = 
-  CorollaryTwo c v swf x b y ¬x≡y ¬x≡b (λ v' ca-x>b _ → 
-    CorollaryOne c v' swf x y b ¬x≡y ¬y≡b dec ca-x>b) 
+  CorollaryOfWeaklyDecisive-x>yImpliesDecisive-z>y c v swf x b y ¬x≡y ¬x≡b (λ v' ca-x>b _ → 
+    CorollaryOfWeaklyDecisive-x>yImpliesDecisive-x>z c v' swf x y b ¬x≡y ¬y≡b dec ca-x>b) 
   ca-a>b
     where
       ¬x≡b : ¬ x ≡ b
@@ -443,8 +443,8 @@ ExpansionOfDecisiveness n>2 c swf x y ¬x≡y dec v a b ca-a>b | false because o
       ¬y≡b : ¬ y ≡ b
       ¬y≡b y≡b = ¬b≡y (Eq.sym y≡b)
 ... | true because ofʸ b≡x | false because ofⁿ ¬a≡y rewrite b≡x = 
-  CorollaryOne c v swf a y x ¬a≡y ¬y≡x 
-    (λ v' ca-a>y _ → CorollaryTwo c v' swf x y a ¬x≡a ¬x≡y dec ca-a>y) 
+  CorollaryOfWeaklyDecisive-x>yImpliesDecisive-x>z c v swf a y x ¬a≡y ¬y≡x 
+    (λ v' ca-a>y _ → CorollaryOfWeaklyDecisive-x>yImpliesDecisive-z>y c v' swf x y a ¬x≡a ¬x≡y dec ca-a>y) 
   ca-a>b
   where 
       ¬x≡a : ¬ x ≡ a
@@ -452,7 +452,7 @@ ExpansionOfDecisiveness n>2 c swf x y ¬x≡y dec v a b ca-a>b | false because o
       ¬y≡x : ¬ y ≡ x 
       ¬y≡x y≡x = ¬x≡y (Eq.sym y≡x)
 ... | true because ofʸ b≡x | true because ofʸ a≡y rewrite b≡x | a≡y 
-  = CorollaryThree n>2 c v swf x y dec ca-a>b
+  = WeaklyDecisive-x>yImpliesDecisive-y>x n>2 c v swf x y dec ca-a>b
 
 ConstructCoalition : {m s : ℕ}
                    → (c : Coalition m)
